@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="customer1" class="spring.mvc.model.Customer">
+        <property name="fullname" value="Student1"/>
+        <property name="birthday" value="05/01/1999" />
+        <property name="email" value="student1@gmaail.com"/>
+        <property name="address" value="Hanoi"/>
+        <property name="mobilePhone" value="0999999999"/>
+        <property name="gender" value="Male"/>
+    </bean>
+    <bean id="customer2" class="spring.mvc.model.Customer">
+        <property name="fullname" value="Student2"/>
+        <property name="birthday" value="01/01/1999"/>
+        <property name="email" value="student2@gmaail.com"/>
+        <property name="address" value="Hanoi"/>
+        <property name="mobilePhone" value="0999999998"/>
+        <property name="gender" value="Female"/>
+    </bean>
+</beans>
