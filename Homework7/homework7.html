@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js" integrity="sha512-37T7leoNS06R80c8Ulq7cdCDU5MNQBwlYoy1TX/WUsLFC2eYNqtKlV0QjH7r8JpG/S0GUMZwebnVFLPd6SU5yg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Homework 7</title>
+</head>
+<body>
+    <div>
+        <div>
+            <select id="language">
+                <option value="Vietnamese" selected>Vietnamese</option>
+                <option value="English">English</option>
+            </select>
+        </div>
+        <div>
+            <button id="showform">Show Form</button>
+            <button id="hideform">Hide Form</button>
+        </div>
+        <div>
+            <button id="showtable">Show Table</button>
+            <button id="hidetable">Hide Table</button>
+        </div>
+
+    </div>
+    <div id="registration">
+        <center><h1>Student Registration Form</h1></center>
+        <form action="">
+            Student ID: <input type="number" minlength="5" maxlength="5" id="studentID" required/> <br>
+            Full name: <input type="text" name="" id="fullname" minlength="2" required> <br>
+            <fieldset>
+                <legend>Gender</legend>
+                <input type="radio" name="gender" id="gender" value="Male"> Male
+                <input type="radio" name="gender" id="gender" value="Female"> Female
+            </fieldset>
+            Date of birth: <input type="date" name="" id="dob" min="1998" max="2003"> <br>
+            Grade: <input type="number" name="" id="grade" min="0" max="10" required/> <br>
+            <input type="button" id="register" value="Register" />
+        </form>
+    </div>
+    <div id="statistics">
+        <p>Total: <span id="total"></span> students</p>
+        <p>Male: <span id="male_student"></span> students</p>
+        <p>Female: <span id="female_student"></span> students</p>
+        <p>Ratio: <span id="ratio_gender"> %</span></p>
+        <p>Average grade: <span id="avg_grade"></span></p>
+        <p>Grade classification summary: <span id="grade_classification"></span></p>
+    </div>
+    <div id="info">
+        <center><h1>Student Information</h1></center>
+        <table border="1">
+            <tr>
+                <th>No.</th>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Gender</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
+                <th>Grade</th>
+                <th>Classification</th>
+                <th>Ranking</th>
+            </tr>
+        </table>
+    </div>
+    <script>
+        // call validation method
+        $(document).ready(function() {
+            $("form").validate();
+        });
+        // css
+        $("#info").css({"background-color":"white","width":"fit-content","padding":"20px", "border-radius":"15px","margin-left":"auto","margin-right":"auto","margin-top":"3%","box-shadow":"2px 2px 11px #8888","border":"3px dashed orange","text-align":"left","line-height":"30px"});
+        $("#registration").css({"background-color":"white","width":"fit-content","padding":"20px", "border-radius":"15px","margin-left":"auto","margin-right":"auto","margin-top":"3%","box-shadow":"2px 2px 11px #8888","border":"3px dashed orange","text-align":"left","line-height":"30px"});
+        $("#statistics").css({"text-align":"center"});
+        $("#register").css({"background-color":"orangered","width":"80px","height":"30px","border-radius":"8px","border":"0","color":"white","font-weight":"bold"});
+    
+        $("#register").hover(function(){
+        $(this).css({"background-color": "orange","box-shadow":"1px 1px 5px #8888"});
+        }, function(){
+        $(this).css({"background-color":"orangered"});
+        });
+
+        //hide statistics
+        $("#statistics").hide();
+        // hide table
+        $("#info").hide();
+        $("#hidetable").click(function() {
+            $("#info").hide();
+        }); 
+
+        //show table
+        $("#showtable").click(function() {
+            $("#info").show();
+        });
+        // hide form
+        $("#hideform").click(function() {
+            $("#registration").hide();
+        }); 
+
+        //show form
+        $("#showform").click(function() {
+            $("#registration").show();
+        });
+
+        //change language
+        $("#language").change(function() {
+            if($(this).val() == "English") {
+                $("#hideform").text("Hide Form");
+                $("#showform").text("Show Form");
+                $("#showtable").text("Show Table");
+                $("#hidetable").text("Hide Table");
+
+            } else if($(this).val() == "Vietnamese") {
+                $("#hideform").text("Ẩn Biểu Mẫu");
+                $("#showform").text("Hiện Biểu Mẫu");
+                $("#showtable").text("Hiện Bảng");
+                $("#hidetable").text("Ẩn Bảng");
+            }
+        })
+        var i = 1;
+
+        //list grade
+        var listGrade = [];
+
+        var count_male = 0;
+        var count_female = 0;
+
+
+        //get data from registration form
+        $("#register").click(function() {
+            if(i <= 15) {
+                var studentID = $("#studentID").val();
+                var fullname = $("#fullname").val();
+                var gender = $("#gender:checked").val();
+                var dob = $("#dob").val();
+                var dt = new Date();
+                var dt_dob = new Date(dob);
+                var grade = parseFloat($("#grade").val());
+
+                var regex_studentID = /\d/;
+                var regex_fullname = /[a-zA-Z]/;
+            
+                if(studentID == "" || fullname == "" || gender == "" || dob == "" || grade == "") {
+                    alert("Please, enter all fields");
+                    return;
+                } else{
+                    if(studentID.length != 5) {
+                        alert("The length of student ID is only 5!");
+                        return;
+                    } else if(regex_studentID.test(studentID) == false) {
+                        alert("Only number for student id!");
+                        return;
+                    } else if(fullname.length < 2 || !regex_fullname.test(fullname)) {
+                        alert("The fullname at least 2 words!");
+                        return; 
+                    } else if(dt_dob.getFullYear() >2003 || dt_dob.getFullYear() < 1998) {
+                        alert("The year of birth only from 1998 to 2003!");
+                        return; 
+                    } else if(grade < 0.0 || grade > 10.0) {
+                        alert("The grade invalid!");
+                        return; 
+                    } else {
+                        //tach first name, last name tu full name
+                        var fname = fullname.split(" ");
+                        var fistname = fname[0];
+                        var lastname = [];
+                        for(var n = 1; n < fname.length; n++) {
+                            lastname.push(fname[n]);
+                        }
+                        //lay tuoi tu nam sinh
+                        var age = parseInt(dt.getFullYear() - dt_dob.getFullYear());
+
+                        //gan grade vao mang
+                        listGrade[i-1] = parseFloat(grade);
+
+                        //max grade
+                        var maxGrade = Math.max(...listGrade);
+                        
+                        //tao table
+                        $("table").append("<tr id="+i+"></tr>");
+                        $("#"+i).append("<td>"+i+"</td>");
+                        $("#"+i).append("<td>"+studentID+"</td>");
+                        $("#"+i).append("<td>"+fistname+"</td>");
+                        $("#"+i).append("<td>"+lastname.join(" ")+"</td>");
+                        $("#"+i).append("<td>"+gender+"</td>");
+                        $("#"+i).append("<td>"+dob+"</td>");
+                        $("#"+i).append("<td>"+age+"</td>");
+                        $("#"+i).append("<td>"+grade+"</td>");
+                        $("#"+i).append("<td>"+classification(grade)+"</td>");
+
+                        //ranking 
+                        var listRank = [];
+                        var same_grade = 0;
+                        ranking(grade,same_grade,listGrade,listRank);
+
+                        //highlight for highest grade
+                        highlight_highest_grade();
+                        //show table
+                        $("#info").show();
+
+                        if(gender == "Male") {
+                            count_male++;
+                        } else if(gender == "Female") {
+                            count_female++;
+                        }
+                        var ratio_male = parseFloat(count_male/(count_male+count_female)) * 100;
+                        var ratio_female = parseFloat(100-ratio_male);
+                        var avg_grade = 0.0;
+                        var s = 0;
+                        var count_classA = 0;
+                        var count_classB = 0;
+                        var count_classC = 0;
+                        var count_classD = 0;
+                        var count_classE = 0;
+                        for(var grade_i = 0; grade_i < i; grade_i++) {
+                            s += parseFloat(listGrade[grade_i]);
+                            var grade_classification = document.getElementsByTagName("table")[0].getElementsByTagName("tr")[parseInt(grade_i+1)].getElementsByTagName("td")[8].innerHTML;
+                            console.log(grade_classification);
+                            if(grade_classification == "E") {
+                                count_classE++;
+                            } else if(grade_classification == "D") {
+                                count_classD++;
+                            } else if(grade_classification == "C") {
+                                count_classC++;
+                            } else if(grade_classification == "B") {
+                                count_classB++;
+                            } else if(grade_classification == "A") {
+                                count_classA++;
+                            }
+                        }
+                        avg_grade = parseFloat(s/i);
+                        console.log(s);
+                        console.log(avg_grade);
+
+                        $("#total").text(i);
+                        $("#male_student").text(count_male);
+                        $("#female_student").text(count_female);
+                        $("#ratio_gender").text("Male: " + ratio_male + "%, Female: " + ratio_female + "%");
+                        $("#avg_grade").text(avg_grade);
+                        $("#grade_classification").text(count_classA + "A, "+count_classB + "B, "+count_classC + "C, "+count_classD + "D, "+count_classE + "E, ")
+
+
+                        //show statistics
+                        $("#statistics").show();
+                        i++;
+                    }
+                }
+               
+            } else {
+                alert("Can't add more students!");
+            }
+            
+        });
+
+        // ham phan loai theo diem
+        function classification(grade) {
+            if(grade >= 0.0 && grade < 5.0) {
+                return "E";
+            } else if(grade >= 5.0 && grade < 7.0) {
+                return "D";
+            } else if(grade >= 7.0 && grade < 8.0) {
+                return "C";
+            } else if(grade >= 8.0 && grade < 9.0) {
+                return "B";
+            } else {
+                return "A";
+            }
+        }
+        function highlight_highest_grade() {
+            for(var rank_i = 0; rank_i< i; rank_i++) {
+                var z = rank_i+ 1;
+                var rank = parseInt(document.getElementsByTagName("table")[0].getElementsByTagName("tr")[z].getElementsByTagName("td")[9].innerHTML);
+                console.log("Rank row " + z+" = " + rank);
+                if(rank == 1) {
+                    $("#"+(rank_i+1)).css({"background-color":"orangered","color":"white","font-weight":"bold","font-size":"20px","box-shadow":"2px 5px 15px #888888"});
+                }else {
+                    $("#"+(rank_i+1)).css({"background-color":"white","color":"black","font-weight":"normal","box-shadow":"unset","font-size":"16px"});
+                }
+            }
+        }
+        function ranking(grade,same_grade, listGrade, listRank) {
+            if(i == 1) {
+                $("#"+i).append("<td>"+1+"</td>");
+
+            } else {
+                //sap xep mang va dao chieu
+                listGrade = (listGrade.sort()).reverse();
+                console.log(listGrade);
+                //dem so lan xuat hien của grade
+                for(var grade_i = 0; grade_i < i; grade_i++) {
+                    if(grade == listGrade[grade_i]) {
+                        same_grade++;
+                    }
+                }
+                //loai bo phan tu trung nhau
+                listGrade = listGrade.filter((element, index) => {
+                        return listGrade.indexOf(element) == index;
+                });
+                //luu vao listRank
+                for(var rank_i = 0; rank_i < i; rank_i++) {
+                    if(grade == listGrade[rank_i]){
+                        listRank.push(rank_i + 1);
+                    }
+                }
+
+                $("#"+i).append("<td >"+listRank[0]+"</td>");
+
+                if(same_grade == 1) {
+                    var table = document.getElementsByTagName("table")[0];
+                        for(var numb_rows = 1; numb_rows < (table.rows.length -1); numb_rows++) {
+                            //neu grade < grade cuoi cung nhap vao thi rank + 1
+                            if( parseFloat(table.rows[numb_rows].cells[7].innerHTML) < parseFloat($('#grade:last').val()) ){
+                                table.rows[numb_rows].cells[9].innerHTML = parseInt(table.rows[numb_rows].cells[9].innerHTML) + 1;
+                            }
+                        }
+                }
+            }
+
+        }
+
+    </script>
+</body>
+</html>
